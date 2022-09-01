@@ -101,21 +101,19 @@ function BuildEdge(jobInfo, startSeed, pieces, length, width)
 end
 
 function BuildPuzzlePiece(jobInfo, verticalEdges, horizontalEdges, column, row)
-  -- local piece = ContourGroup(true)
   local piece = Contour(0.0)
-  -- piece:AppendPoint(0,0)
 
   --left side
   if column == 1 then
     local edge = Contour(0.0)
     edge:AppendPoint(0, 0)
     edge:LineTo(Point2D(0, jobInfo.pieceHeight))
-    piece:AddTail(edge)
+    piece:AppendContour(edge)
   else
     local edge = verticalEdges[column - 1][row]:Clone()
     local rot = RotationMatrix2D(Point2D(0, 0), 90)
     edge:Transform(rot)
-    piece:AddTail(edge)
+    piece:AppendContour(edge)
   end
 
   --top side
@@ -123,12 +121,12 @@ function BuildPuzzlePiece(jobInfo, verticalEdges, horizontalEdges, column, row)
     local edge = Contour(0.0)
     edge:AppendPoint(0, jobInfo.pieceHeight)
     edge:LineTo(Point2D(jobInfo.pieceWidth, jobInfo.pieceHeight))
-    piece:AddTail(edge)
+    piece:AppendContour(edge)
   else
     local edge = horizontalEdges[row][column]:Clone()
     local tr = TranslationMatrix2D(Vector2D(0, jobInfo.pieceHeight))
     edge:Transform(tr)
-    piece:AddTail(edge)
+    piece:AppendContour(edge)
   end
 
   --right side
@@ -136,7 +134,7 @@ function BuildPuzzlePiece(jobInfo, verticalEdges, horizontalEdges, column, row)
     local edge = Contour(0.0)
     edge:AppendPoint(jobInfo.pieceWidth, jobInfo.pieceHeight)
     edge:LineTo(Point2D(jobInfo.pieceWidth, 0))
-    piece:AddTail(edge)
+    piece:AppendContour(edge)
   else
     local edge = verticalEdges[column][row]:Clone()
     local rot = RotationMatrix2D(Point2D(0, 0), 90)
@@ -144,7 +142,7 @@ function BuildPuzzlePiece(jobInfo, verticalEdges, horizontalEdges, column, row)
     local tr = TranslationMatrix2D(Vector2D(jobInfo.pieceWidth, 0))
     edge:Transform(tr)
     edge:Reverse()
-    piece:AddTail(edge)
+    piece:AppendContour(edge)
   end
 
   --bottom side
@@ -152,11 +150,11 @@ function BuildPuzzlePiece(jobInfo, verticalEdges, horizontalEdges, column, row)
     local edge = Contour(0.0)
     edge:AppendPoint(jobInfo.pieceWidth, 0)
     edge:LineTo(Point2D(0, 0))
-    piece:AddTail(edge)
+    piece:AppendContour(edge)
   else
     local edge = horizontalEdges[row - 1][column]:Clone()
     edge:Reverse()
-    piece:AddTail(edge)
+    piece:AppendContour(edge)
   end
 
   return piece
@@ -210,7 +208,7 @@ function BuildPuzzle(jobInfo)
       piece:Transform(tr)
 
       --create cad object
-      local cad_object = CreateCadGroup(piece)
+      local cad_object = CreateCadContour(piece)
       -- and add our object to it
       layer:AddObject(cad_object, true)
     end
