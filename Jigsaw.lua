@@ -9,7 +9,7 @@ g_title   = "Jigsaw Creator"
 job       = VectricJob()
 
 
-
+local dir_reader
 
 --build single edge of length
 --left to right
@@ -241,8 +241,20 @@ function OnLuaButton_ApplyButton(dialog)
 
   BuildPuzzle(jobInfo)
 
+  -- save values to registry
+  dir_reader:SetInt("Rows", jobInfo.rows)
+  dir_reader:SetInt("Columns", jobInfo.columns)
+  dir_reader:SetInt("PieceWidth", jobInfo.pieceWidth)
+  dir_reader:SetInt("PieceHeight", jobInfo.pieceHeight)
+  dir_reader:SetInt("TabSize", jobInfo.tabSize)
+  dir_reader:SetInt("RandomOffsetFactor", jobInfo.randomOffsetFactor)
+  dir_reader:SetInt("PieceClearance", jobInfo.pieceClearance)
+  dir_reader:SetInt("Randomseed", jobInfo.randomseed)
+
   return true
 end
+
+
 
 function main(script_path)
 
@@ -252,23 +264,25 @@ function main(script_path)
     return false
   end
 
+  dir_reader = Registry("JigsawPuzzle")
+
   local script_html = "file:" .. script_path .. "\\Jigsaw.htm"
   local dialog = HTML_Dialog(false, script_html, 450, 400, g_title)
 
   dialog:AddLabelField("GadgetTitle", g_title)
 
-  dialog:AddIntegerField("RowsEdit", 3)
-  dialog:AddIntegerField("ColumnsEdit", 3)
-  dialog:AddIntegerField("PieceWidthEdit", 200)
-  dialog:AddIntegerField("PieceHeightEdit", 200)
+  dialog:AddIntegerField("RowsEdit", dir_reader:GetInt("Rows", 2) )
+  dialog:AddIntegerField("ColumnsEdit", dir_reader:GetInt("Columns", 2))
+  dialog:AddIntegerField("PieceWidthEdit", dir_reader:GetInt("PieceWidth", 50))
+  dialog:AddIntegerField("PieceHeightEdit", dir_reader:GetInt("PieceHeight", 50))
 
-  dialog:AddIntegerField("TabSizeEdit", 20)
+  dialog:AddIntegerField("TabSizeEdit", dir_reader:GetInt("TabSize", 20))
 
-  dialog:AddIntegerField("RandomOffsetFactorEdit", 3)
+  dialog:AddIntegerField("RandomOffsetFactorEdit", dir_reader:GetInt("RandomOffsetFactor", 3))
 
-  dialog:AddIntegerField("PieceClearanceEdit", 0)
+  dialog:AddIntegerField("PieceClearanceEdit", dir_reader:GetInt("PieceClearance", 0))
 
-  dialog:AddIntegerField("RandomseedEdit", 69)
+  dialog:AddIntegerField("RandomseedEdit", dir_reader:GetInt("Randomseed", 69))
 
   -- Show the dialog
   if not dialog:ShowDialog() then
